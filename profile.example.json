@@ -1,0 +1,21 @@
+{
+  "first_name": "",
+  "middle_name": "",
+  "last_name": "",
+  "preferred_name": "",
+  "email_fulltime": "",
+  "email_parttime": "",
+  "phone": "",
+  "street_address": "",
+  "city": "",
+  "state": "",
+  "postal_code": "",
+  "country": "",
+  "linkedin": "",
+  "github": "",
+  "portfolio": "",
+  "passwords": {
+    "standard": "",
+    "strong": ""
+  }
+}

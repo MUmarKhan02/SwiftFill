@@ -1,0 +1,15 @@
+# Profile — contains personal info and passwords
+profile.json
+
+# Icons (generated/personal assets)
+icons/
+
+# Resumes
+resumes/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# VSCode
+.vscode/
