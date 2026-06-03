@@ -27,6 +27,7 @@ function runFill(mode, profile, password) {
     fill("First name",     SELECTORS.first_name,     profile.first_name);
     fill("Middle name",    SELECTORS.middle_name,     profile.middle_name);
     fill("Last name",      SELECTORS.last_name,       profile.last_name);
+    fill("Full name",      SELECTORS.full_name,       profile.full_name);
     fill("Preferred name", SELECTORS.preferred_name,  profile.preferred_name);
     fill("Email",          SELECTORS.email,           profile.email);
     fill("Phone",          SELECTORS.phone,           profile.phone);
@@ -43,6 +44,7 @@ function runFill(mode, profile, password) {
   if (mode === "signup") {
     fill("First name", SELECTORS.first_name, profile.first_name);
     fill("Last name",  SELECTORS.last_name,  profile.last_name);
+    fill("Full name",  SELECTORS.full_name,  profile.full_name);
     fill("Email",      SELECTORS.email,      profile.email);
     fill("Phone",      SELECTORS.phone,      profile.phone);
     // First password field

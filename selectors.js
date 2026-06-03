@@ -39,6 +39,15 @@ const SELECTORS = {
     'input[name="preferredName"]',
     'input[name="preferred_name"]',
   ],
+  full_name: [
+    'input[name*="full" i][name*="name" i]',
+    'input[id*="full" i][id*="name" i]',
+    'input[placeholder*="full name" i]',
+    'input[autocomplete="name"]',
+    'input[name="fullName"]',
+    'input[name="full_name"]',
+    'input[id="fullName"]',
+  ],
   email: [
     'input[type="email"]',
     'input[name*="email" i]',
@@ -53,6 +62,7 @@ const SELECTORS = {
     'input[placeholder*="phone" i]',
     'input[autocomplete="tel"]',
     'input[autocomplete="tel-national"]',
+    'input[name="CandidatePhone.NormalizedNumber"]',
   ],
   street_address: [
     'input[autocomplete="street-address"]',
