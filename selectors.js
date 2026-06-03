@@ -1,4 +1,4 @@
-const SELECTORS = {
+var SELECTORS = {
   first_name: [
     'input[name*="first" i][name*="name" i]',
     'input[id*="first" i][id*="name" i]',
@@ -47,6 +47,7 @@ const SELECTORS = {
     'input[name="fullName"]',
     'input[name="full_name"]',
     'input[id="fullName"]',
+    'input[name="_systemfield_name"]',
   ],
   email: [
     'input[type="email"]',

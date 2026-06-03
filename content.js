@@ -18,6 +18,8 @@ function runFill(mode, profile, password) {
     if (!value) return;
     if (tryFill(selectors, value)) {
       filled.push(label);
+    } else if (tryFillByLabel(label, value)) {
+      filled.push(label + " (label match)");
     } else {
       skipped.push(label);
     }
@@ -112,6 +114,7 @@ function setNativeValue(el, value) {
     trySelectOption(el, value);
     return;
   }
+  el.scrollIntoView();
   const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
     window.HTMLInputElement.prototype, "value"
   )?.set;
@@ -122,6 +125,7 @@ function setNativeValue(el, value) {
   }
   el.dispatchEvent(new Event("input",  { bubbles: true }));
   el.dispatchEvent(new Event("change", { bubbles: true }));
+  el.dispatchEvent(new Event("blur",   { bubbles: true }));
 }
 
 function trySelectOption(el, value) {
@@ -141,4 +145,49 @@ function trySelectOption(el, value) {
       return;
     }
   }
+}
+function tryFillByLabel(labelText, value) {
+  if (!value) return false;
+
+  const labels = document.querySelectorAll("label");
+
+  for (const label of labels) {
+    if (label.textContent.trim().toLowerCase().includes(labelText.toLowerCase())) {
+
+      let input = null;
+
+      // Method 1: label has a "for" attribute pointing to input id
+      if (label.htmlFor) {
+        input = document.getElementById(label.htmlFor);
+      }
+
+      // Method 2: input is nested inside the label
+      if (!input) {
+        input = label.querySelector("input, textarea");
+      }
+
+      // Method 3: input is the next sibling element
+      if (!input) {
+        input = label.nextElementSibling?.querySelector("input, textarea")
+               ?? label.nextElementSibling;
+      }
+
+      if (input && isUsable(input)) {
+        input.scrollIntoView();
+        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
+          window.HTMLInputElement.prototype, "value"
+        )?.set;
+        if (nativeInputValueSetter) {
+          nativeInputValueSetter.call(input, value);
+        } else {
+          input.value = value;
+        }
+        input.dispatchEvent(new Event("input",  { bubbles: true }));
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+        input.dispatchEvent(new Event("blur",   { bubbles: true }));
+        return true;
+      }
+    }
+  }
+  return false;
 }
