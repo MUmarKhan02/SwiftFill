@@ -75,6 +75,10 @@ var SELECTORS = {
     'input[data-automation-id*="addressSection_addressLine1"]',
     'input[name="address1"]',
     'input[name="address_line_1"]',
+    'input[id="address_1"]',
+    'input[id="resumator-address-value"]',
+    'input[id="AddressLine1" i]',
+
   ],
   city: [
     'input[autocomplete="address-level2"]',
@@ -82,6 +86,7 @@ var SELECTORS = {
     'input[id*="city" i]',
     'input[placeholder*="city" i]',
     'input[data-automation-id*="addressSection_city"]',
+    'input[id="city" i]',
   ],
   state: [
     'input[autocomplete="address-level1"]',
@@ -105,6 +110,7 @@ var SELECTORS = {
     'input[placeholder*="postal" i]',
     'input[placeholder*="zip" i]',
     'input[data-automation-id*="addressSection_postalCode"]',
+    'input[id*="postalCode" i]',
   ],
   country: [
     'input[autocomplete="country-name"]',
@@ -143,5 +149,6 @@ var SELECTORS = {
     'input[placeholder*="password" i]',
     'input[autocomplete="new-password"]',
     'input[autocomplete="current-password"]',
+    'input[type="password"][name*="confirm" i]',
   ],
 };
