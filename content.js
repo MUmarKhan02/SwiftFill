@@ -48,6 +48,13 @@ function runFill(mode, profile, password) {
     fill("Last name",  SELECTORS.last_name,  profile.last_name);
     fill("Full name",  SELECTORS.full_name,  profile.full_name);
     fill("Email",      SELECTORS.email,      profile.email);
+
+    if (tryFillNth('input[type="email"]', profile.email, 1)) {
+      filled.push("Confirm email");
+    } else {
+      skipped.push("Confirm email");
+    }
+
     fill("Phone",      SELECTORS.phone,      profile.phone);
     // First password field
     if (tryFill(SELECTORS.password, password)) {
