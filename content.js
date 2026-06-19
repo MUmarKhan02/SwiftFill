@@ -43,7 +43,7 @@ function runFill(mode, profile, password) {
     fill("Portfolio",      SELECTORS.portfolio,       profile.portfolio);
   }
 
-  if (mode === "signup") {
+    if (mode === "signup") {
     fill("First name", SELECTORS.first_name, profile.first_name);
     fill("Last name",  SELECTORS.last_name,  profile.last_name);
     fill("Full name",  SELECTORS.full_name,  profile.full_name);
@@ -51,18 +51,20 @@ function runFill(mode, profile, password) {
 
     if (tryFillNth('input[type="email"]', profile.email, 1)) {
       filled.push("Confirm email");
+    } else if (tryFillNth('input[name*="email" i]', profile.email, 1)) {
+      filled.push("Confirm email");
     } else {
       skipped.push("Confirm email");
     }
 
-    fill("Phone",      SELECTORS.phone,      profile.phone);
-    // First password field
+    fill("Phone", SELECTORS.phone, profile.phone);
+
     if (tryFill(SELECTORS.password, password)) {
       filled.push("Password");
     } else {
       skipped.push("Password");
     }
-    // Confirm password — second input[type="password"] on the page
+
     if (tryFillNth('input[type="password"]', password, 1)) {
       filled.push("Confirm password");
     } else {
