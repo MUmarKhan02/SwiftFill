@@ -48,6 +48,7 @@ var SELECTORS = {
     'input[name="full_name"]',
     'input[id="fullName"]',
     'input[name="_systemfield_name"]',
+    'input[name="name"]',
   ],
   email: [
     'input[type="email"]',
