@@ -18,5 +18,9 @@
   "passwords": {
     "standard": "",
     "strong": ""
+  },
+  "gender": "",
+  "ethnicity": "",
+  "disability": "",
+  "veteran": ""
   }
-}

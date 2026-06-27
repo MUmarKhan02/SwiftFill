@@ -1,14 +1,10 @@
-// Listens for fill commands from popup.js via chrome.runtime messages
-
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.action === "fill") {
     const results = runFill(message.mode, message.profile, message.password);
     sendResponse(results);
   }
-  return true; // keep channel open for async
+  return true;
 });
-
-// ── Core fill logic ────────────────────────────────────────────────────────────
 
 function runFill(mode, profile, password) {
   const filled = [];
@@ -20,6 +16,14 @@ function runFill(mode, profile, password) {
       filled.push(label);
     } else if (tryFillByLabel(label, value)) {
       filled.push(label + " (label match)");
+    } else {
+      skipped.push(label);
+    }
+  }
+
+  function fillRadio(label, keywords, value) {
+    if (tryFillRadioByLabel(keywords, value)) {
+      filled.push(label);
     } else {
       skipped.push(label);
     }
@@ -41,9 +45,27 @@ function runFill(mode, profile, password) {
     fill("LinkedIn",       SELECTORS.linkedin,        profile.linkedin);
     fill("GitHub",         SELECTORS.github,          profile.github);
     fill("Portfolio",      SELECTORS.portfolio,       profile.portfolio);
+
+    // ── Voluntary / EEO
+    fill("Gender",     SELECTORS.gender,     profile.gender);
+    fill("Ethnicity",  SELECTORS.ethnicity,  profile.ethnicity);
+    fill("Disability", SELECTORS.disability, profile.disability);
+    fill("Veteran",    SELECTORS.veteran,    profile.veteran);
+
+    fillRadio("Gender (radio)",     ["gender", "sex"],     profile.gender);
+    fillRadio("Ethnicity (radio)",  ["ethnicity", "race"], profile.ethnicity);
+    fillRadio("Disability (radio)", ["disability"],        profile.disability);
+    fillRadio("Veteran (radio)",    ["veteran"],           profile.veteran);
+
+    // ── Work authorization & sponsorship
+    fill("Work authorization", SELECTORS.work_authorization, profile.work_authorization);
+    fill("Sponsorship",        SELECTORS.sponsorship,        profile.sponsorship);
+
+    fillRadio("Work authorization (radio)", ["authorized", "authorization", "legally allowed", "work in"], profile.work_authorization);
+    fillRadio("Sponsorship (radio)",        ["sponsor", "visa", "sponsorship"],                            profile.sponsorship);
   }
 
-    if (mode === "signup") {
+  if (mode === "signup") {
     fill("First name", SELECTORS.first_name, profile.first_name);
     fill("Last name",  SELECTORS.last_name,  profile.last_name);
     fill("Full name",  SELECTORS.full_name,  profile.full_name);
@@ -73,7 +95,7 @@ function runFill(mode, profile, password) {
   }
 
   if (mode === "login") {
-    fill("Email",    SELECTORS.email,    profile.email);
+    fill("Email", SELECTORS.email, profile.email);
     if (tryFill(SELECTORS.password, password)) {
       filled.push("Password");
     } else {
@@ -83,8 +105,6 @@ function runFill(mode, profile, password) {
 
   return { filled, skipped };
 }
-
-// ── Fill helpers ───────────────────────────────────────────────────────────────
 
 function tryFill(selectors, value) {
   for (const selector of selectors) {
@@ -111,13 +131,48 @@ function tryFillNth(selector, value, nth) {
   return false;
 }
 
+function tryFillRadioByLabel(keywords, value) {
+  if (!value) return false;
+
+  const radios = document.querySelectorAll('input[type="radio"], input[type="checkbox"]');
+
+  for (const radio of radios) {
+    let labelText = "";
+
+    if (radio.id) {
+      const label = document.querySelector(`label[for="${radio.id}"]`);
+      if (label) labelText = label.textContent.trim();
+    }
+    if (!labelText && radio.closest("label")) {
+      labelText = radio.closest("label").textContent.trim();
+    }
+    if (!labelText && radio.getAttribute("aria-label")) {
+      labelText = radio.getAttribute("aria-label").trim();
+    }
+
+    if (!labelText) continue;
+
+    if (labelText.toLowerCase().includes(value.toLowerCase())) {
+      const container = radio.closest("fieldset, div, section, form");
+      if (container) {
+        const containerText = container.textContent.toLowerCase();
+        const keywordMatch = keywords.some(k => containerText.includes(k.toLowerCase()));
+        if (!keywordMatch) continue;
+      }
+
+      radio.scrollIntoView();
+      radio.click();
+      radio.dispatchEvent(new Event("change", { bubbles: true }));
+      return true;
+    }
+  }
+  return false;
+}
+
 function isUsable(el) {
   return !el.disabled && el.offsetParent !== null;
 }
 
-// React/Vue/Angular frameworks track input state internally.
-// A plain el.value = x won't trigger their onChange handlers.
-// This fires the native input + change events so frameworks pick it up.
 function setNativeValue(el, value) {
   if (el.tagName === "SELECT") {
     trySelectOption(el, value);
@@ -138,7 +193,6 @@ function setNativeValue(el, value) {
 }
 
 function trySelectOption(el, value) {
-  // Try exact value match
   for (const opt of el.options) {
     if (opt.value === value || opt.value.toLowerCase() === value.toLowerCase()) {
       el.value = opt.value;
@@ -146,7 +200,6 @@ function trySelectOption(el, value) {
       return;
     }
   }
-  // Try label match (partial)
   for (const opt of el.options) {
     if (opt.text.toLowerCase().includes(value.toLowerCase())) {
       el.value = opt.value;
@@ -155,6 +208,7 @@ function trySelectOption(el, value) {
     }
   }
 }
+
 function tryFillByLabel(labelText, value) {
   if (!value) return false;
 
@@ -165,17 +219,12 @@ function tryFillByLabel(labelText, value) {
 
       let input = null;
 
-      // Method 1: label has a "for" attribute pointing to input id
       if (label.htmlFor) {
         input = document.getElementById(label.htmlFor);
       }
-
-      // Method 2: input is nested inside the label
       if (!input) {
         input = label.querySelector("input, textarea");
       }
-
-      // Method 3: input is the next sibling element
       if (!input) {
         input = label.nextElementSibling?.querySelector("input, textarea")
                ?? label.nextElementSibling;
