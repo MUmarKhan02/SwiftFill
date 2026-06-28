@@ -101,6 +101,7 @@ var SELECTORS = {
     'select[id*="state" i]',
     'select[name*="province" i]',
     'input[data-automation-id*="addressSection_countryRegion"]',
+    'select[name="state.value"]',
   ],
   postal_code: [
     'input[autocomplete="postal-code"]',

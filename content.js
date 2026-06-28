@@ -170,6 +170,7 @@ function tryFillRadioByLabel(keywords, value) {
 }
 
 function isUsable(el) {
+  if (el.tagName === "SELECT" && el.hasAttribute("aria-hidden")) return true;
   return !el.disabled && el.offsetParent !== null;
 }
 
