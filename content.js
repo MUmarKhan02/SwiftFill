@@ -153,18 +153,25 @@ function tryFillRadioByLabel(keywords, value) {
     if (!labelText) continue;
 
     if (labelText.toLowerCase() === value.toLowerCase()) {
-      const container = radio.closest("fieldset, div, section, form");
-      if (container) {
-        const containerText = container.textContent.toLowerCase();
-        const keywordMatch = keywords.some(k => containerText.includes(k.toLowerCase()));
-        if (!keywordMatch) continue;
-      }
-
-      radio.scrollIntoView();
-      radio.click();
-      radio.dispatchEvent(new Event("change", { bubbles: true }));
-      return true;
+  // Walk up multiple levels to find a container with the keyword
+  let container = radio.parentElement;
+  let keywordMatch = false;
+  for (let i = 0; i < 6; i++) {
+    if (!container) break;
+    const containerText = container.textContent.toLowerCase();
+    if (keywords.some(k => containerText.includes(k.toLowerCase()))) {
+      keywordMatch = true;
+      break;
     }
+    container = container.parentElement;
+  }
+  if (!keywordMatch) continue;
+
+  radio.scrollIntoView();
+  radio.click();
+  radio.dispatchEvent(new Event("change", { bubbles: true }));
+  return true;
+}
   }
   return false;
 }
