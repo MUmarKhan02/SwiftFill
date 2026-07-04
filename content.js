@@ -171,6 +171,7 @@ function tryFillRadioByLabel(keywords, value) {
 
 function isUsable(el) {
   if (el.tagName === "SELECT" && el.hasAttribute("aria-hidden")) return true;
+  if (el.type === "radio" || el.type === "checkbox") return !el.disabled;
   return !el.disabled && el.offsetParent !== null;
 }
 
