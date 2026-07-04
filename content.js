@@ -152,7 +152,7 @@ function tryFillRadioByLabel(keywords, value) {
 
     if (!labelText) continue;
 
-    if (labelText.toLowerCase().includes(value.toLowerCase())) {
+    if (labelText.toLowerCase() === value.toLowerCase()) {
       const container = radio.closest("fieldset, div, section, form");
       if (container) {
         const containerText = container.textContent.toLowerCase();
