@@ -36,7 +36,6 @@ document.getElementById("run-btn").addEventListener("click", async () => {
   const email       = profile[emailKey] ?? "";
   const password    = profile.passwords?.[passwordKey] ?? "";
 
-  // Inject the selected email as a top-level field so content.js can use it
   const profileWithEmail = { ...profile, email };
 
   const runBtn = document.getElementById("run-btn");

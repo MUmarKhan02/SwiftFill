@@ -21,6 +21,12 @@ function runFill(mode, profile, password) {
     }
   }
 
+  // Only reports if it filled; stays silent when the field isn't on the page
+  function fillOptional(label, selectors, value) {
+    if (!value) return;
+    if (tryFill(selectors, value)) filled.push(label);
+  }
+
   function fillRadio(label, keywords, value) {
     if (tryFillRadioByLabel(keywords, value)) {
       filled.push(label);
@@ -63,23 +69,29 @@ function runFill(mode, profile, password) {
 
     fillRadio("Work authorization (radio)", ["authorized", "authorization", "legally allowed", "work in"], profile.work_authorization);
     fillRadio("Sponsorship (radio)",        ["sponsor", "visa", "sponsorship"],                            profile.sponsorship);
+
+    // ── Extra fields
+    fill("Salary",          SELECTORS.salary,          profile.salary);
+    fill("Availability",    SELECTORS.availability,    profile.availability);
+    fill("Referral source", SELECTORS.referral_source, profile.referral_source);
+    fill("Cover letter",    SELECTORS.cover_letter,    profile.cover_letter);
   }
 
-  if (mode === "signup") {
-    fill("First name", SELECTORS.first_name, profile.first_name);
-    fill("Last name",  SELECTORS.last_name,  profile.last_name);
-    fill("Full name",  SELECTORS.full_name,  profile.full_name);
-    fill("Email",      SELECTORS.email,      profile.email);
+  // ── Sign Up / Log In (merged)
+  if (mode === "auth") {
+    // Signup-only extras: filled if present, silent if not
+    fillOptional("First name", SELECTORS.first_name, profile.first_name);
+    fillOptional("Last name",  SELECTORS.last_name,  profile.last_name);
+    fillOptional("Full name",  SELECTORS.full_name,  profile.full_name);
+    fillOptional("Phone",      SELECTORS.phone,      profile.phone);
 
-    if (tryFillNth('input[type="email"]', profile.email, 1)) {
+    // Always expected
+    fill("Email", SELECTORS.email, profile.email);
+
+    if (tryFillNth('input[type="email"]', profile.email, 1) ||
+        tryFillNth('input[name*="email" i]', profile.email, 1)) {
       filled.push("Confirm email");
-    } else if (tryFillNth('input[name*="email" i]', profile.email, 1)) {
-      filled.push("Confirm email");
-    } else {
-      skipped.push("Confirm email");
     }
-
-    fill("Phone", SELECTORS.phone, profile.phone);
 
     if (tryFill(SELECTORS.password, password)) {
       filled.push("Password");
@@ -89,17 +101,6 @@ function runFill(mode, profile, password) {
 
     if (tryFillNth('input[type="password"]', password, 1)) {
       filled.push("Confirm password");
-    } else {
-      skipped.push("Confirm password");
-    }
-  }
-
-  if (mode === "login") {
-    fill("Email", SELECTORS.email, profile.email);
-    if (tryFill(SELECTORS.password, password)) {
-      filled.push("Password");
-    } else {
-      skipped.push("Password");
     }
   }
 
@@ -153,25 +154,24 @@ function tryFillRadioByLabel(keywords, value) {
     if (!labelText) continue;
 
     if (labelText.toLowerCase() === value.toLowerCase()) {
-  // Walk up multiple levels to find a container with the keyword
-  let container = radio.parentElement;
-  let keywordMatch = false;
-  for (let i = 0; i < 6; i++) {
-    if (!container) break;
-    const containerText = container.textContent.toLowerCase();
-    if (keywords.some(k => containerText.includes(k.toLowerCase()))) {
-      keywordMatch = true;
-      break;
-    }
-    container = container.parentElement;
-  }
-  if (!keywordMatch) continue;
+      let container = radio.parentElement;
+      let keywordMatch = false;
+      for (let i = 0; i < 6; i++) {
+        if (!container) break;
+        const containerText = container.textContent.toLowerCase();
+        if (keywords.some(k => containerText.includes(k.toLowerCase()))) {
+          keywordMatch = true;
+          break;
+        }
+        container = container.parentElement;
+      }
+      if (!keywordMatch) continue;
 
-  radio.scrollIntoView();
-  radio.click();
-  radio.dispatchEvent(new Event("change", { bubbles: true }));
-  return true;
-}
+      radio.scrollIntoView();
+      radio.click();
+      radio.dispatchEvent(new Event("change", { bubbles: true }));
+      return true;
+    }
   }
   return false;
 }

@@ -3,31 +3,73 @@
 <head>
   <meta charset="UTF-8" />
   <style>
+    :root {
+      --bg:        #0d1411;
+      --surface:   #151f1a;
+      --border:    #243229;
+      --text:      #e8f3ec;
+      --muted:     #6f8a7a;
+      --mint:      #6ee7a8;
+      --mint-dark: #2f9e68;
+      --mint-bg:   #14301f;
+      --yellow:    #facc15;
+      --red:       #f87171;
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      width: 280px;
+      width: 290px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       font-size: 13px;
-      background: #0f0f0f;
-      color: #e8e8e8;
+      background: var(--bg);
+      color: var(--text);
       padding: 16px;
     }
 
-    h1 {
-      font-size: 14px;
-      font-weight: 600;
-      color: #fff;
-      margin-bottom: 14px;
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .header img {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+    }
+
+    .header h1 {
+      font-size: 15px;
+      font-weight: 700;
       letter-spacing: 0.3px;
+      color: #fff;
+    }
+
+    .header .bolt {
+      color: var(--yellow);
+      margin-left: auto;
+      font-size: 14px;
     }
 
     .section-label {
-      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
       text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: #666;
+      letter-spacing: 1px;
+      color: var(--muted);
       margin-bottom: 6px;
+    }
+
+    .section-label::before {
+      content: "";
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--yellow);
     }
 
     .btn-group {
@@ -38,22 +80,23 @@
 
     .btn {
       flex: 1;
-      padding: 8px 0;
-      border: 1px solid #2a2a2a;
-      border-radius: 6px;
-      background: #1a1a1a;
-      color: #aaa;
+      padding: 9px 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      color: #9bb3a5;
       font-size: 12px;
       cursor: pointer;
       transition: all 0.15s;
     }
 
-    .btn:hover { border-color: #444; color: #ddd; }
+    .btn:hover { border-color: var(--mint-dark); color: var(--text); }
 
     .btn.active {
-      background: #1d3a2a;
-      border-color: #2d6b45;
-      color: #4ade80;
+      background: var(--mint-bg);
+      border-color: var(--mint);
+      color: var(--mint);
+      font-weight: 600;
     }
 
     .select-wrapper {
@@ -64,69 +107,80 @@
     .select-wrapper::after {
       content: "▾";
       position: absolute;
-      right: 10px;
+      right: 12px;
       top: 50%;
       transform: translateY(-50%);
-      color: #666;
+      color: var(--yellow);
       pointer-events: none;
       font-size: 12px;
     }
 
     select {
       width: 100%;
-      padding: 8px 10px;
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      border-radius: 6px;
-      color: #e8e8e8;
+      padding: 9px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
       font-size: 12px;
-      margin-bottom: 0;
       appearance: none;
       cursor: pointer;
+      transition: border-color 0.15s;
     }
 
-    select:focus { outline: none; border-color: #2d6b45; }
+    select:hover { border-color: var(--mint-dark); }
+    select:focus { outline: none; border-color: var(--mint); }
 
     .hidden { display: none; }
 
     #run-btn {
       width: 100%;
-      padding: 10px;
-      background: #2d6b45;
+      padding: 11px;
+      background: linear-gradient(135deg, var(--mint) 0%, #4fd18c 100%);
       border: none;
-      border-radius: 6px;
-      color: #fff;
+      border-radius: 8px;
+      color: #07140d;
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
-      transition: background 0.15s;
+      transition: transform 0.1s, box-shadow 0.15s;
+      box-shadow: 0 2px 12px rgba(110, 231, 168, 0.2);
     }
 
-    #run-btn:hover { background: #38855a; }
-    #run-btn:disabled { background: #1a1a1a; color: #444; cursor: not-allowed; }
+    #run-btn:hover { box-shadow: 0 2px 16px rgba(110, 231, 168, 0.4); }
+    #run-btn:active { transform: scale(0.98); }
+    #run-btn:disabled {
+      background: var(--surface);
+      color: #3d5247;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
 
     #status {
       margin-top: 12px;
       font-size: 11px;
       line-height: 1.6;
-      color: #888;
+      color: var(--muted);
       min-height: 16px;
     }
 
-    #status .ok   { color: #4ade80; }
-    #status .skip { color: #facc15; }
-    #status .err  { color: #f87171; }
+    #status .ok   { color: var(--mint); }
+    #status .skip { color: var(--yellow); }
+    #status .err  { color: var(--red); }
   </style>
 </head>
 <body>
 
-  <h1>SwiftFill</h1>
+  <div class="header">
+    <img src="icons/icon48.png" alt="" />
+    <h1>SwiftFill</h1>
+    <span class="bolt">⚡</span>
+  </div>
 
   <div class="section-label">Mode</div>
   <div class="btn-group">
     <button class="btn active" data-mode="autofill">Application</button>
-    <button class="btn"        data-mode="signup">Sign Up</button>
-    <button class="btn"        data-mode="login">Log In</button>
+    <button class="btn"        data-mode="auth">Sign Up / Log In</button>
   </div>
 
   <div class="section-label">Email</div>
